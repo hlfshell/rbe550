@@ -1,12 +1,15 @@
 import sys
 from getopt import getopt
 
-from field import Field
+from field import Field, Tetrominoe
 
 try:
-    opts, args = getopt(sys.argv[1:], "g:w::h::o::p:")
+    opts, args = getopt(sys.argv[1:], "fg:w::h::o::p:")
 except Exception as e:
     print("python create-field.py -w 128 -h 128 -o out.jpg -p 30")
+    print("Optional:")
+    print("\t-g output.gif\t:\tcreate a gif")
+    print("\t-f\t\t:\tfun tetrominoes")
     sys.exit(2)
 
 width = 0
@@ -14,6 +17,7 @@ height = 0
 output = ""
 percentage = 0
 gif = ""
+fun = False
 
 for opt, arg in opts:
     if opt == "-w":
@@ -26,8 +30,13 @@ for opt, arg in opts:
         percentage = int(arg)/100
     elif opt == "-g":
         gif = arg
+    elif opt == "-f":
+        fun = True
 
 field = Field(width, height)
+
+if fun:
+    field.tetrominoes = Tetrominoe.load_tetrominoes("fun_tetrominoes")
 
 if gif == "":
     field.fill_field_to_percent(percentage)
