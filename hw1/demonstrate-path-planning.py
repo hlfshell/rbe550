@@ -12,14 +12,14 @@ field.fill_field_to_percent(0.7)
 
 # Select a goal position
 while True:
-    goal_position = (randint(0, width), randint(0, height))
+    goal_position = (randint(3*width/4, width), randint(3*height/4, height))
     if not field.is_occupied(goal_position):
         break
 field.place_goal(goal_position)
 
 # Select a robot position
 while True:
-    robot_position = (randint(0, width), randint(0, height))
+    robot_position = (randint(0, width/4), randint(0, height/4))
     if not field.is_occupied(robot_position):
         break
 field.place_robot(robot_position)
