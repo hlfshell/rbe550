@@ -2,6 +2,7 @@ from os import listdir, path
 from random import choice, randint
 from typing import Union, List, Optional, Tuple
 
+import inspect
 import numpy as np
 from PIL import Image, ImageDraw
 
@@ -25,9 +26,9 @@ class Tetrominoe:
         line = []
         for char in data:
             if char == "0":
-                line.append(0)
+                line.append("O")
             elif char == "1":
-                line.append(1)
+                line.append("X")
             elif char == "\n":
                 tetrominoe.append(line)
                 line = []
@@ -86,7 +87,7 @@ class Field:
         for _ in range(0, height):
             row = []
             for _ in range(0, width):
-                row.append(0)
+                row.append("O")
             self.field.append(row)
 
         if tetrominoes is None:
@@ -120,13 +121,13 @@ class Field:
                 bottom_right = (upper_left[0] + cell_size, upper_left[1] + cell_size)
                 color = "white"
                 value = self.get_value((row, column))
-                if value == 1:
+                if value == "X":
                     color = "black"
                 elif value == "R":
                     color = "red"
                 elif value == "G":
                     color = "green"
-                elif value == "V":
+                elif type(value) == int:
                     color = "grey"
                 elif value == "P":
                     color = "blue"
@@ -135,7 +136,12 @@ class Field:
         return im
 
     def is_occupied(self, position: Tuple[int, int]) -> bool:
-        return self.field[position[1]][position[0]] in [1, 'C', 'V']
+        if position[0] >= len(self.field[0]) \
+                or position[1] >= len(self.field):
+            curframe = inspect.currentframe()
+            calframe = inspect.getouterframes(curframe, 2)
+
+        return self.field[position[1]][position[0]] not in ["O", "R", "G"]
 
     def coverage_percentage(self) -> float:
         return self.obstacle_fields / (len(self.field)*len(self.field[0]))
@@ -177,7 +183,7 @@ class Field:
                     if row > len(self.field) or column > len(self.field[0]):
                         continue
 
-                    self.field[row][column] = 1
+                    self.field[row][column] = "X"
 
         # increment the number of fields that are covered
         self.obstacle_fields += obstacle_fields
@@ -213,7 +219,7 @@ class Field:
             raise Exception("Can not set robot to an occupied space")
 
         if self.robot_position is not None:
-            self.set_value(self.robot_position, 0)
+            self.set_value(self.robot_position, "O")
 
         self.set_value(position, 'R')
         self.robot_position = position
@@ -223,7 +229,7 @@ class Field:
             raise Exception("Can not set goal to an occupied space")
 
         if self.goal_position is not None:
-            self.set_value(self.goal_position, 0)
+            self.set_value(self.goal_position, "O")
 
         self.set_value(position, 'G')
         self.goal_position = position
@@ -233,21 +239,21 @@ class Field:
         # rm, cm (row move, column move) - if you can, move in that direction
         # If, however, we are near a border, ignore that neighbor
         for rm in [-1, 1]:
-            row_current = position[0] + rm # row current
-            if row_current < 0 or row_current >= len(self.field[0]):
+            row_current = position[1] + rm # row current
+            if row_current < 0 or row_current >= len(self.field):
                 continue
-
-            if not self.is_occupied((row_current, position[1])):
-                neighbors.append((row_current, position[1]))
+            
+            if not self.is_occupied((position[0], row_current)):
+                neighbors.append((position[0], row_current))
 
         for cm in [-1, 1]:
-            column_current = position[1] + cm # column current
-            if column_current < 0 or column_current >= len(self.field):
+            column_current = position[0] + cm # column current
+            if column_current < 0 or column_current >= len(self.field[0]):
                 continue
 
-            if not self.is_occupied((position[0], column_current)):
-                neighbors.append((position[0], column_current))
-                
+            if not self.is_occupied((column_current, position[1])):
+                neighbors.append((column_current, position[1]))
+
         return neighbors
 
 
@@ -260,5 +266,8 @@ class Field:
     def reset(self):
         for row, columns in enumerate(self.field):
             for column, value in enumerate(columns):
-                if value not in [1, 0]:
-                    self.field[row][column] = 0
+                if value not in ["X", "O"]:
+                    self.field[row][column] = "O"
+            
+            self.place_goal(self.goal_position)
+            self.place_robot(self.robot_position)
