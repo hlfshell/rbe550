@@ -128,7 +128,7 @@ class Field:
                 elif value == "G":
                     color = "green"
                 elif type(value) == int:
-                    color = "grey"
+                    color = "lightblue"
                 elif value == "P":
                     color = "blue"
                 draw.rectangle([upper_left, bottom_right], fill = color)
