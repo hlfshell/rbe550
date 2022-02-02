@@ -1,8 +1,8 @@
+import inspect
 from os import listdir, path
 from random import choice, randint
-from typing import Union, List, Optional, Tuple
+from typing import List, Optional, Tuple, Union
 
-import inspect
 import numpy as np
 from PIL import Image, ImageDraw
 

@@ -1,6 +1,7 @@
-from typing import Callable, Dict, List, Optional, Tuple
-from field import Field
 from queue import Queue
+from typing import Callable, Dict, List, Optional, Tuple
+
+from field import Field
 
 
 class Planner():
@@ -10,8 +11,11 @@ class Planner():
         self.queue = queue
         self.parents: Dict[Tuple[int, int], Tuple[int, int]] = {}
         self.cost_fnc = cost_fnc
+        self.steps_taken = 0
 
     def step(self) -> Optional[List[Tuple[int, int]]]:
+        self.steps_taken += 1
+
         # If the queue is empty, there is no path :-(
         if len(self.queue) == 0:
             raise Exception("No path to the goal exists")

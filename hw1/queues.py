@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from queue import PriorityQueue
 
+
 class Queue(ABC):
 
     def __init__(self):
