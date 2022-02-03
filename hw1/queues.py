@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from queue import PriorityQueue
+from random import choice
 
 
 class Queue(ABC):
@@ -67,3 +68,19 @@ class Dijkstras(Queue):
 
     def __len__(self):
         return len(self.queue.queue)
+
+
+# The random queue
+class Random(Queue):
+    def __init__(self):
+        self.queue = []
+        super().__init__()
+
+    def push(self, item, cost=0):
+        self.queue.append(item)
+
+    def pop(self):
+        return choice(self.queue)
+
+    def __len__(self):
+        return len(self.queue)

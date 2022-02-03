@@ -1,15 +1,15 @@
 from math import floor
-from random import randint
+from random import randint, random
 from field import Field
 from os import makedirs, path
 from planner import Planner
-from queues import BFSQueue, DFSQueue, Dijkstras
+from queues import BFSQueue, DFSQueue, Dijkstras, Random
 from cost_functions import dijkstras_cost, greedy_cost, astar_cost
 from matplotlib import pyplot as plt 
 
 width = 128
 height = 128
-iterations_per = 100
+iterations_per = 500
 max_percentage = 75
 percentage_range = range(0, max_percentage+5, 5)
 
@@ -36,12 +36,17 @@ def astar_planner(field: Field):
     queue = Dijkstras()
     return Planner(field, queue, cost_fnc=astar_cost)
 
+def random_planner(field: Field):
+    queue = Random()
+    return Planner(field, queue)
+
 planners = {
         bfs_planner: "BFS",
         dfs_planner: "DFS",
         dijkstra_planner: "Dijkstra",
         greedy_planner: "Greedy",
-        astar_planner: "A*"
+        astar_planner: "A*",
+        random_planner: "Random"
     }
 
 # Initialize results storage
@@ -86,9 +91,6 @@ for fill_percentage in percentage_range:
                 path, _ = planner.search()
                 steps_taken[planners[planner_fnc]][fill_percentage].append(planner.steps_taken)
                 path_length[planners[planner_fnc]][fill_percentage].append(len(path))
-                if field_count == 0:
-                    im = planner.field.draw()
-                    im.save(f"tmp/{planners[planner_fnc]}_{fill_percentage}.jpg")
                 
             field_count += 1
         except Exception as e:
@@ -148,11 +150,12 @@ for planner in steps_taken:
     plt.plot(percentages, lengths, label=planner)
     plt.savefig(f"plots/{planner}_paths.jpg")
 
-    plt.figure("iterations_all")
-    plt.plot(percentages, steps, label=planner)
-    plt.figure("paths_all")
-    plt.plot(percentages, lengths, label=planner)
-    if planner != planners[dfs_planner]:
+    if planner != planners[random_planner]:
+        plt.figure("iterations_all")
+        plt.plot(percentages, steps, label=planner)
+        plt.figure("paths_all")
+        plt.plot(percentages, lengths, label=planner)
+    if planner != planners[dfs_planner] and planner != planners[random_planner]:
         plt.figure("paths_sans_dfs")
         plt.plot(percentages, lengths, label=planner)
 

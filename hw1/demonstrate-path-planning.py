@@ -5,7 +5,7 @@ from random import randint
 
 from field import Field
 from planner import Planner
-from queues import BFSQueue, DFSQueue, Dijkstras
+from queues import BFSQueue, DFSQueue, Dijkstras, Random
 from cost_functions import dijkstras_cost, greedy_cost, astar_cost
 
 try:
@@ -75,6 +75,17 @@ im.save("dfs.jpg")
 
 field.reset()
 
+print("Random")
+random = Random()
+planner = Planner(field, random)
+path, images = planner.search(gif=gif)
+if gif:
+    save_gif(images, "random.gif")
+im = field.draw()
+im.save("random.jpg")
+
+field.reset()
+
 print("DIJKSTRAS")
 dijkstras = Dijkstras()
 planner = Planner(field, dijkstras, cost_fnc=dijkstras_cost)
@@ -86,6 +97,7 @@ im = field.draw()
 im.save("dijkstras.jpg")
 
 field.reset()
+
 print("GREEDY")
 dijkstras = Dijkstras()
 planner = Planner(field, dijkstras, cost_fnc=greedy_cost)
