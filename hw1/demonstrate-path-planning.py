@@ -9,7 +9,7 @@ from queues import BFSQueue, DFSQueue, Dijkstras, Random
 from cost_functions import dijkstras_cost, greedy_cost, astar_cost
 
 try:
-    opts, args = getopt(sys.argv[1:], "g:w::h::p:")
+    opts, args = getopt(sys.argv[1:], ":w::h::p:g")
 except Exception as e:
     print("python demonstrate-path-planning.py -w 128 -h 128 -p 30")
     print("Optional:")
